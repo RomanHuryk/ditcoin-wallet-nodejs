@@ -1,6 +1,6 @@
-# ditcoin-nodejs
+# ditcoin-wallet-nodejs
 
-A Node.js wallet manager for interacting with Ditcoin's simplewallet over JSON-RPC. 
+A Node.js wallet manager for interacting with `ditcoin-wallet-rpc` over JSON-RPC. 
 
 For more information about Ditcoin, visit: https://ditcoin.io
 
@@ -13,13 +13,13 @@ DIT: `9RUGwFu3WGh3wAkeWWzMNiQXiW9ChYRpH974mDdrGcjpEcpPrz143oc9sV1W8YyAUwCztbfxt9
 ### via NPM
 
 ```sh
-npm install ditcoin-nodejs
+npm install ditcoin-wallet
 ```
 
 ### Or clone the Github repository
 
 ```sh
-git clone https://github.com/ditcoin/ditcoin-nodejs.git
+git clone https://github.com/ditcoin/ditcoin-wallet-nodejs.git
 ```
 
 ## Initializing a wallet
@@ -27,16 +27,16 @@ git clone https://github.com/ditcoin/ditcoin-nodejs.git
 Require the module:
 
 ```js
-var DitcoinWallet = require('ditcoin-nodejs');
+var DitcoinWallet = require('ditcoin-wallet-nodejs');
 ```
 
 Create a new instance of the wallet:
 
 ```js
-let Wallet = new DitcoinWallet();
+let wallet = new DitcoinWallet();
 ```
 
-This creates a wallet using the following simplewallet default RPC settings:
+This creates a wallet using the following `ditcoin-wallet-rpc` default RPC settings:
    
 * `hostname` - '127.0.0.1'
 * `port` - 19092
@@ -44,16 +44,16 @@ This creates a wallet using the following simplewallet default RPC settings:
 To connect to a wallet with different settings, pass in the values:
 
 ```js
-let Wallet = new DitcoinWallet($HOSTNAME, $PORT);
+let wallet = new DitcoinWallet($HOSTNAME, $PORT);
 
 // or with rpc authentification needed
-let Wallet = new DitcoinWallet(HOSTNAME, $PORT, $USERNAME, $PASSWORD);
+let wallet = new DitcoinWallet(HOSTNAME, $PORT, $USERNAME, $PASSWORD);
 ```
-**Note: versions of ditcoin-nodejs prior to 3.0 require `hostname` with the 'http://' prefix, 3.0 and greater only require the IP address.**
+**Note: versions of ditcoin-wallet-nodejs prior to 3.0 require `hostname` with the 'http://' prefix, 3.0 and greater only require the IP address.**
 
 ## Testing
 
-Some basic tests can now be run locally to verify the library and your simplewallet instance are communicating. The tests assume simplewallet will be listening at the default config settings. Tests are run via mocha.
+Some basic tests can now be run locally to verify the library and your `ditcoin-wallet-rpc` instance are communicating. The tests assume RPC wallet will be listening at the default config settings. Tests are run via mocha.
 To run the tests, clone the repository and then:
     
     npm install
@@ -62,7 +62,7 @@ To run the tests, clone the repository and then:
 ## Example Usage
 
 ```js
-Wallet.getBalance().then(function(balance) {
+wallet.getBalance().then(function(balance) {
     console.log(balance);
 });
 ```
@@ -156,7 +156,7 @@ Returns an object with `error` field if unsuccessful.
 Usage:
 
 ```js
-Wallet.getBalance();
+wallet.getBalance();
 ```
 
 Responds with the current balance and unlocked (spendable) balance of the wallet in atomic units. Divide by 1e8 to convert.
@@ -172,7 +172,7 @@ Example response:
 Usage:
 
 ```js
-Wallet.address();
+wallet.address();
 ```
 
 Responds with the Ditcoin address of the wallet.
@@ -188,7 +188,7 @@ Example response:
 Usage:
 
 ```js
-Wallet.transfer(options);
+wallet.transfer(options);
 ```
 
 Transfers Ditcoin to a single recipient OR a group of recipients in a single transaction. Responds with the transaction hash of the payment.
@@ -233,7 +233,7 @@ Example response:
 Usage:
 
 ```js
-Wallet.transferSplit(options);
+wallet.transferSplit(options);
 ```
 
 Same as `transfer`, but can split into more than one transaction if necessary. Responds with a list of transaction hashes.
@@ -253,7 +253,7 @@ Example response:
 Usage:
 
 ```js
-Wallet.sweepDust();
+wallet.sweepDust();
 ```
 
 Sends all dust outputs back to the wallet, to make funds easier to spend and mix. Responds with a list of the corresponding transaction hashes.
@@ -285,7 +285,7 @@ Example response:
 Usage:
 
 ```js
-Wallet.getPayments(paymentID);
+wallet.getPayments(paymentID);
 ```
 
 Returns a list of incoming payments using a given payment ID.
@@ -299,7 +299,7 @@ Parameters:
 Usage:
 
 ```js
-Wallet.getBulkPayments(paymentIDs, minHeight);
+wallet.getBulkPayments(paymentIDs, minHeight);
 ```
 
 Returns a list of incoming payments using a single payment ID or a list of payment IDs from a given height.
@@ -314,7 +314,7 @@ Parameters:
 Usage:
 
 ```js
-Wallet.incomingTransfers(type);
+wallet.incomingTransfers(type);
 ```
 
 Returns a list of incoming transfers to the wallet.
@@ -328,7 +328,7 @@ Parameters:
 Usage:
 
 ```js
-Wallet.queryKey(type);
+wallet.queryKey(type);
 ```
 
 Returns the wallet's spend key (mnemonic seed) or view private key.
@@ -342,13 +342,13 @@ Parameters:
 Usage:
 
 ```js
-Wallet.makeIntegratedAddress(paymentID);
+wallet.makeIntegratedAddress(paymentID);
 ```
 
 OR:
 
 ```js
-Wallet.makeIntegratedAddress();
+wallet.makeIntegratedAddress();
 ```
 
 Make and return a new integrated address from your wallet address and a payment ID.
@@ -368,7 +368,7 @@ Example response:
 Usage:
 
 ```js
-Wallet.splitIntegratedAddress(address);
+wallet.splitIntegratedAddress(address);
 ```
 
 Returns the standard address and payment ID corresponding to a given integrated address.
@@ -389,7 +389,7 @@ Example response:
 Usage:
 
 ```js
-Wallet.getHeight();
+wallet.getHeight();
 ```
 
 Returns the current block height of the daemon.
@@ -417,7 +417,7 @@ wallet.store();
 Usage:
 
 ```js
-Wallet.stopWallet();
+wallet.stopWallet();
 ```
 
-Cleanly shuts down the current simplewallet process.
+Cleanly shuts down the current `ditcoin-wallet-rpc` process.

@@ -1,6 +1,6 @@
 {
-  "name": "ditcoin-nodejs",
-  "version": "3.2.2",
+  "name": "ditcoin-wallet",
+  "version": "4.0.0",
   "description": "a Node.js ditcoin wallet manager",
   "main": "./lib/wallet.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ditcoin/ditcoin-nodejs.git"
+    "url": "git+https://github.com/ditcoin/ditcoin-wallet-nodejs.git"
   },
   "keywords": [
     "ditcoin",
@@ -18,7 +18,7 @@
     "shapeshift",
     "cryptocurrency",
     "Node.js",
-    "simplewallet",
+    "ditcoin-wallet-rpc",
     "bitcoin",
     "monero",
     "ditcoind"
@@ -26,9 +26,9 @@
   "author": "Tindo N. Arsel <devtnga@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ditcoin/ditcoin-nodejs/issues"
+    "url": "https://github.com/ditcoin/ditcoin-wallet-nodejs/issues"
   },
-  "homepage": "https://github.com/ditcoin/ditcoin-nodejs#readme",
+  "homepage": "https://github.com/ditcoin/ditcoin-wallet-nodejs#readme",
   "dependencies": {
     "node-libcurl": "^1.3.2"
   },
