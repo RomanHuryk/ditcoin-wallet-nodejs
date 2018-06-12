@@ -27,7 +27,7 @@ git clone https://github.com/ditcoin/ditcoin-wallet-nodejs.git
 Require the module:
 
 ```js
-var DitcoinWallet = require('ditcoin-wallet-nodejs');
+const DitcoinWallet = require('ditcoin-wallet');
 ```
 
 Create a new instance of the wallet:

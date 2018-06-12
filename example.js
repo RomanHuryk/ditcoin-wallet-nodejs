@@ -1,35 +1,50 @@
-var ditcoinWallet = require('./lib/wallet');
-var Wallet = new ditcoinWallet();
+const DitcoinWallet = require('./lib/wallet');
+let wallet = new DitcoinWallet();
+
+// //# or with rpc authentification needed
+
+// let wallet = new DitcoinWallet('127.0.0.1', 19092, 'ditrpcuser', 'passwdrpc');
 
 // examples
 
-// Wallet.integratedAddress().then(function(result){
+// //# used when rpc wallet is started with `--wallet-dir` option
+
+// wallet.createWallet('dit_testy', 'testy').then((result) => {
 //     console.log(result);
 // });
 
-// Wallet.balance().then(function(response){
+// wallet.openWallet('dit_testy', 'testy').then((result) => {
+//     console.log(result);
+// });
+
+// //#
+
+// wallet.makeIntegratedAddress().then((result) => {
+//     console.log(result);
+// });
+
+// wallet.getBalance().then((response) => {
 //     console.log(response);
 // });
 //
-// Wallet.address().then(function(response){
+// wallet.getAddress().then((response) => {
 //     console.log(response);
 // });
 //
-// Wallet.height().then(function(height){
+// wallet.getHeight().then((height) => {
 //     console.log(height);
 // });
 //
-Wallet.incomingTransfers('all').then(function(result){
-    console.log(result);
+// wallet.incomingTransfers('all').then((result) =>  {
+//     console.log(result);
+// });
+
+let body = {
+    destinations: {
+        address: '9RUGwFu3WGh3wAkeWWzMNiQXiW9ChYRpH974mDdrGcjpEcpPrz143oc9sV1W8YyAUwCztbfxt9usZSMVnSBwPxCaDXzhYWz',
+        amount: 1
+    }
+};
+wallet.transfer(body).then((result) => {
+   console.log(result);
 });
-
-//var destination = {};
-//destination.address = '47Vmj6BXSRPax69cVdqVP5APVLkcxxjjXdcP9fJWZdNc5mEpn3fXQY1CFmJDvyUXzj2Fy9XafvUgMbW91ZoqwqmQ6RjbVtp';
-//destination.amount = 1;
-//
-//Wallet.transfer(destination).then(function(result){
-//    console.log(result);
-//});
-
-
-
