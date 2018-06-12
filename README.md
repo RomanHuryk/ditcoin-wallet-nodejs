@@ -6,17 +6,19 @@ For more information about Ditcoin, visit: https://ditcoin.io
 
 Donations:
 
-DTC: `9RUGwFu3WGh3wAkeWWzMNiQXiW9ChYRpH974mDdrGcjpEcpPrz143oc9sV1W8YyAUwCztbfxt9usZSMVnSBwPxCaDXzhYWz`
+DIT: `9RUGwFu3WGh3wAkeWWzMNiQXiW9ChYRpH974mDdrGcjpEcpPrz143oc9sV1W8YyAUwCztbfxt9usZSMVnSBwPxCaDXzhYWz`
 
 ## Install the package 
 
 ### via NPM
-```
+
+```sh
 npm install ditcoin-nodejs
 ```
 
 ### Or clone the Github repository
-```
+
+```sh
 git clone https://github.com/ditcoin/ditcoin-nodejs.git
 ```
 
@@ -24,14 +26,14 @@ git clone https://github.com/ditcoin/ditcoin-nodejs.git
 
 Require the module:
 
-```
-var ditcoinWallet = require('ditcoin-nodejs');
+```js
+var DitcoinWallet = require('ditcoin-nodejs');
 ```
 
 Create a new instance of the wallet:
 
-```
-var Wallet = new ditcoinWallet();
+```js
+let Wallet = new DitcoinWallet();
 ```
 
 This creates a wallet using the following simplewallet default RPC settings:
@@ -41,8 +43,11 @@ This creates a wallet using the following simplewallet default RPC settings:
 
 To connect to a wallet with different settings, pass in the values:
 
-```
-var Wallet = new ditcoinWallet($HOSTNAME, $PORT);
+```js
+let Wallet = new DitcoinWallet($HOSTNAME, $PORT);
+
+// or with rpc authentification needed
+let Wallet = new DitcoinWallet(HOSTNAME, $PORT, $USERNAME, $PASSWORD);
 ```
 **Note: versions of ditcoin-nodejs prior to 3.0 require `hostname` with the 'http://' prefix, 3.0 and greater only require the IP address.**
 
@@ -56,33 +61,117 @@ To run the tests, clone the repository and then:
 
 ## Example Usage
 
+```js
+Wallet.getBalance().then(function(balance) {
+    console.log(balance);
+});
+```
 
-    Wallet.balance().then(function(balance) {
-        console.log(balance);
-    });
+## Run an Instance of the RPC Wallet
 
+For internal communication through library and RPC wallet, following options are optional:
+
+```sh
+--rpc-bind-port
+--rpc-bind-ip
+--daemon-host
+--confirm-external-bind
+```
+
+**Note**: more informations can be found using `--help` option.
+
+### Without authentification
+
+```sh
+ditcoin-wallet-rpc --password "$wallet_password" --wallet-file $wallet_filepath --rpc-bind-port 17092 --rpc-bind-ip $external_ip --daemon-host $external_ip --confirm-external-bind --disable-rpc-login
+```
+
+### With authentification
+
+```sh
+ditcoin-wallet-rpc --password "$wallet_password" --wallet-file $wallet_filepath --rpc-bind-port 17092 --rpc-bind-ip $external_ip --daemon-host $external_ip --confirm-external-bind --rpc-login 'upxrpc_user:rpc_password'
+```
+
+### Multi-wallets usage
+
+```bash
+ditcoin-wallet-rpc --password "$wallet_password" --wallet-file $wallet_filepath --rpc-bind-port 17092 --rpc-bind-ip $external_ip --daemon-host $external_ip --confirm-external-bind --rpc-login 'ditrpc_user:rpc_password' --wallet-dir $wallet_dirpath
+```
 
 ## Wallet Methods
 
-### balance
+### createWallet
+
 Usage:
 
+```js
+// used when rpc wallet is started with `--wallet-dir` option
+
+wallet.createWallet('dit_wallet', 'ditcoin', 'English');
 ```
-Wallet.balance();
+
+Creates a new wallet.
+    
+Parameters:
+
+* `filename` - filename of wallet to create (*string*)
+* `password` - wallet password (*string*)
+* `language` - language to use for mnemonic phrase (*string*)
+
+Example response: 
+
+```js
+{}
+```
+
+Returns an object with `error` field if unsuccessful.
+
+### openWalllet
+
+Usage:
+
+```js
+// used when rpc wallet is started with `--wallet-dir` option
+
+wallet.openWallet('dit_wallet', 'ditcoin');
+```
+
+Opens a wallet.
+    
+Parameters:
+
+* `filename` - filename of wallet to open (*string*)
+* `password` -wallet password (*string*)
+
+Example response: 
+
+```js
+{}
+```
+
+Returns an object with `error` field if unsuccessful.
+
+### getBalance
+
+Usage:
+
+```js
+Wallet.getBalance();
 ```
 
 Responds with the current balance and unlocked (spendable) balance of the wallet in atomic units. Divide by 1e8 to convert.
     
 Example response: 
 
-```
+```js
 { balance: 361198014257, unlocked_balance: 361198014257 }
 ```
 
-### address
+### getAddress
+
 Usage:
 
-```
+```js
 Wallet.address();
 ```
 
@@ -90,41 +179,61 @@ Responds with the Ditcoin address of the wallet.
 
 Example response:
 
-```
+```js
 { address: '9RUGwFu3WGh3wAkeWWzMNiQXiW9ChYRpH974mDdrGcjpEcpPrz143oc9sV1W8YyAUwCztbfxt9usZSMVnSBwPxCaDXzhYWz' }
 ```
 
 ### transfer
+
 Usage:
 
-```
-Wallet.transfer(destinations, options);
+```js
+Wallet.transfer(options);
 ```
 
 Transfers Ditcoin to a single recipient OR a group of recipients in a single transaction. Responds with the transaction hash of the payment.
 
 Parameters:
 
-* `destinations` - an object OR an array of objects in the following format: `{amount: (*number*), address: (*string*)}`
-* `options` - an object with the following properties (*optional*)
+* `options` - an object with the following properties (*optional*):
     
-        {   
-            mixin: (*number*), // amount of existing transaction outputs to mix yours with (default is 4)
-            unlockTime: (*number*), // number of blocks before tx is spendable (default is 0)
-            pid: (*string*) // optional payment ID (a 64 character hexadecimal string used for identifying the sender of a payment) 
-        }
+```js
+{
+    'destinations': (object OR array of objects)
+    'mixin': (*int*), // amount of existing transaction outputs to mix yours with (default is 4)
+    'unlockTime': (*int*), // number of blocks before tx is spendable (default is 0)
+    'pid': (*string*) // optional payment ID (a 64 character hexadecimal string used for identifying the sender of a payment)
+    'payment_id': (*string*) // optional payment ID (a 64 character hexadecimal string used for identifying the sender of a payment)
+    'do_not_relay': (*boolean*) // optional boolean used to indicate whether a transaction should be relayed or not
+    'priority': (*int*) // optional transaction priority
+    'get_tx_hex': (*boolean*) // optional boolean used to indicate that the transaction should be returned as hex string after sending
+    'get_tx_key': (*boolean*) // optional boolean used to indicate that the transaction key should be returned after sending
+}
+```
+
+Example:
+
+```js
+$options = {
+    'destinations': (object) {
+        'amount': '1',
+        'address': '7Ey8jHDkWqYDSpoSssv5EmAcsXCct4hum4mhHxT6ruaof9C7JM1ekjsYFa8dQEUL4QMai15akL2az2Me48ShgNMWV3yBkSV'
+    }
+};
+```
 
 Example response:
 
-```
+```js
 { tx_hash: '<b9272a68b0f242769baa1ac2f723b826a7efdc5ba0c71a2feff4f292967936d8>', tx_key: '' }
 ```
 
 ### transferSplit
+
 Usage:
 
-```
-Wallet.transferSplit(destinations, options);
+```js
+Wallet.transferSplit(options);
 ```
 
 Same as `transfer`, but can split into more than one transaction if necessary. Responds with a list of transaction hashes.
@@ -135,29 +244,47 @@ Additional property available for the `options` parameter:
 
 Example response:
 
-```
+```js
 { tx_hash_list: [ '<f17fb226ebfdf784a0f5814e1c5bb78c19ea26930a0d706c9dc1085a250ceb37>' ] }
 ```
 
-### sweep
+### sweepDust
+
 Usage:
 
-```
-Wallet.sweep();
+```js
+Wallet.sweepDust();
 ```
 
 Sends all dust outputs back to the wallet, to make funds easier to spend and mix. Responds with a list of the corresponding transaction hashes.
 
 Example response:
 
+```js
+{ tx_hash_list: [ '<75c666fc96120a643321a5e76c0376b40761582ee40cc4917e8d1379a2c8ad9f>' ] }
 ```
+
+### sweepAll
+
+Usage:
+
+```js
+wallet.sweepAll('9Dty8AeoNi3CgvYRH7rpEoQVRrkCETSdrKAdPE3kVTyYjmh21iiw48z5HEj5nGub1y9pVLLx8gZmwGNKRuLLtaMSLe9QdWx');
+```
+
+Sends all spendable outputs to the specified address. Responds with a list of the corresponding transaction hashes.
+
+Example response:
+
+```js
 { tx_hash_list: [ '<75c666fc96120a643321a5e76c0376b40761582ee40cc4917e8d1379a2c8ad9f>' ] }
 ```
 
 ### getPayments
+
 Usage:
 
-```
+```js
 Wallet.getPayments(paymentID);
 ```
 
@@ -168,9 +295,10 @@ Parameters:
 * `paymentID` - the payment ID to scan wallet for included transactions (*string*)
 
 ### getBulkPayments
+
 Usage:
 
-```
+```js
 Wallet.getBulkPayments(paymentIDs, minHeight);
 ```
 
@@ -182,9 +310,10 @@ Parameters:
 * `minHeight` - the minimum block height to begin scanning from (example: 800000) (*number*)
 
 ### incomingTransfers
+
 Usage:
 
-```
+```js
 Wallet.incomingTransfers(type);
 ```
 
@@ -195,9 +324,10 @@ Parameters:
 * `type` - accepts `"all"`: all the transfers, `"available"`: only transfers that are not yet spent, or `"unavailable"`: only transfers which have been spent (*string*)
 
 ### queryKey
+
 Usage:
 
-```
+```js
 Wallet.queryKey(type);
 ```
 
@@ -207,17 +337,18 @@ Parameters:
 
 * `type` - accepts `"mnemonic"`: the mnemonic seed for restoring the wallet, or `"view_key"`: the wallet's view key (*string*)
 
-### integratedAddress
+### makeIntegratedAddress
+
 Usage:
 
-```
-Wallet.integratedAddress(paymentID);
+```js
+Wallet.makeIntegratedAddress(paymentID);
 ```
 
 OR:
 
-```
-Wallet.integratedAddress();
+```js
+Wallet.makeIntegratedAddress();
 ```
 
 Make and return a new integrated address from your wallet address and a payment ID.
@@ -228,15 +359,16 @@ Parameters:
 
 Example response:
 
-```
+```js
 { integrated_address: '9HCSju123guax69cVdqVP5APVLkcxxjjXdcP9fJWZdNc5mEpn3fXQY1CFmJDvyUXzj2Fy9XafvUgMbW91ZoqwqmQ96NYBVqEd6JAu9j3gk' }
 ```
 
-### splitIntegrated
+### splitIntegratedAddress
+
 Usage:
 
-```
-Wallet.splitIntegrated(address);
+```js
+Wallet.splitIntegratedAddress(address);
 ```
 
 Returns the standard address and payment ID corresponding to a given integrated address.
@@ -247,16 +379,17 @@ Parameters:
 
 Example response:
 
-```
+```js
 { payment_id: '<61eec5ffd3b9cb57>',
   standard_address: '9RUGwFu3WGh3wAkeWWzMNiQXiW9ChYRpH974mDdrGcjpEcpPrz143oc9sV1W8YyAUwCztbfxt9usZSMVnSBwPxCaDXzhYWz' }
 ```
 
-### height 
+### getHeight
+
 Usage:
 
-```
-Wallet.height();
+```js
+Wallet.getHeight();
 ```
 
 Returns the current block height of the daemon.
@@ -267,14 +400,23 @@ Parameters:
 
 Example response:
 
-```
+```js
 { height: 874458 }
 ```
 
-### stopWallet
+### store
+
 Usage:
 
+```js
+wallet.store();
 ```
+
+### stopWallet
+
+Usage:
+
+```js
 Wallet.stopWallet();
 ```
 
